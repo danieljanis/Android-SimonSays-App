@@ -3,17 +3,18 @@ package edu.danieljanis.simongame
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_high_score.*
+import kotlinx.android.synthetic.main.activity_game_over.*
 
-class HighScoreActivity : AppCompatActivity() {
+class GameOverActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_high_score)
+        setContentView(R.layout.activity_game_over)
 
         startOverButton.setOnClickListener {
             val intent = Intent(this, DifficultyScreenActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 }

@@ -1,107 +1,98 @@
 package edu.danieljanis.simongame
 
-// THIS IS THE CONTROLLER
-
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
-import android.widget.TextView
-import androidx.lifecycle.ViewModel
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.activity_start_screen.*
 
-class MainActivity : AppCompatActivity(), SimonModel.SimonListener() {
+class MainActivity : AppCompatActivity(), MainViewFragment.StateListener {
+    private var mainViewFragment: MainViewFragment? = null
 
+    private lateinit var simonModel: SimonModel
 
-    private var viewFragment: MainViewFragment? = null
-
-    private lateinit var easyModel: EasyModel
-//    private lateinit var mediumModel: MediumModel
-//    private lateinit var hardModel: HardModel
-
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_container)
 
+        val level = intent.getSerializableExtra("level") as SimonModel.Level
+        Log.e("TAG", "Difficulty integer -> $level")
 
-        // Difficulty integer determines how hard the game is:
-        /*
-        *       0 = Easy
-        *       1 = Medium
-        *       2 = Hard
-         */
-        val intent = intent
-        val integer = intent.getIntExtra("difficultyLevel", 0)
-        Log.e("TAG", "Difficulty integer -> $integer")
+        simonModel = ViewModelProvider(this).get(SimonModel::class.java)
+        simonModel.setLevel(level)
+        simonModel.listener = object: SimonModel.SimonListener {
+            override fun onStartGame() {}
 
-        easyModel = ViewModelProvider(this).get(EasyModel::class.java)
+            override fun onShowSequence() {
+                mainViewFragment?.showSequence()
+            }
 
+            override fun onCheckSequence() {}
 
-//        mediumModel = ViewModelProvider(this).get(MediumModel::class.java)
-//        hardModel = ViewModelProvider(this).get(HardModel::class.java)
+            override fun onIncrementSequence() {}
 
-        viewFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer) as? MainViewFragment
-        if (viewFragment == null) {
-            viewFragment = MainViewFragment()
+            override fun onEndGame() {
+                flashCorrectButton(simonModel.getCurrentButton(), simonModel.level.getButtonAnimationTime(), simonModel.level.getButtonDelayTime())
+            }
+        }
+
+        mainViewFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer) as? MainViewFragment
+        if (mainViewFragment == null) {
+            mainViewFragment = MainViewFragment()
             supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainer, viewFragment!!)
+                .add(R.id.fragmentContainer, mainViewFragment!!)
                 .commit()
         }
+        mainViewFragment?.listener = this
+    }
 
-        viewFragment?.listener = object: MainViewFragment.StateListener {
-            override fun greenButtonPressed() {
-                Log.e("TAG", "Green button pressed (Delegated from the View to the Controller)")
-                easyModel.checkSequence(integer)
-            }
+    override fun onResume() {
+        super.onResume()
+        simonModel.startGame()
+    }
 
-            override fun redButtonPressed() {
-                Log.e("TAG", "Red button pressed (Delegated from the View to the Controller)")
-                easyModel.checkSequence(integer)
-            }
+    private fun openGameOverActivity() {
+        val intent = Intent(this@MainActivity, GameOverActivity::class.java)
+        intent.putExtra("score", simonModel.getScore())
+        startActivity(intent)
+        finish()
+    }
 
-            override fun blueButtonPressed() {
-                Log.e("TAG", "Blue button pressed (Delegated from the View to the Controller)")
-                easyModel.checkSequence(integer)
-            }
+    override fun onButtonPressed(buttonId: Int) {
+        flashButton(buttonId, 1000)
+        simonModel.checkSequence(buttonId)
+    }
 
-            override fun yellowButtonPressed() {
-                Log.e("TAG", "Yellow button pressed (Delegated from the View to the Controller)")
-                easyModel.checkSequence(integer)
-            }
+    override fun getSequence(): MutableList<Int> {
+        return simonModel.sequence
+    }
 
-            override fun resetButtonPressed() {
-                Log.e("TAG", "Reset button pressed (Delegated from the View to the Controller)")
-                easyModel.resetSequence()
-            }
+    override fun getCurrentLevel(): SimonModel.Level {
+        return simonModel.level
+    }
+
+    private fun flashButton(buttonId: Int, duration: Long) {
+        val flashAnim: Animation = AlphaAnimation(0.5f, 1.0f)
+        flashAnim.duration = duration
+        flashAnim.repeatCount = 0
+        findViewById<Button>(buttonId).startAnimation(flashAnim)
+    }
+
+    private fun flashCorrectButton(buttonId: Int, duration: Long, startDelay: Long) {
+        flashButton(buttonId, duration)
+
+        handler = Handler()
+        runnable = Runnable {
+            openGameOverActivity()
         }
-
-        easyModel.listener = object: EasyModel.Listener {
-            override fun sequenceTriggered() {
-                Log.e("TAG", "Delegated from the EasyModel to the Controller")
-                viewFragment?.runUIUpdate(integer)
-            }
-        }
-    }
-
-    override fun onInitializeSequence() {
-        
-    }
-
-    override fun onShowSequence() {
-
-    }
-
-    override fun onCheckSequence() {
-
-    }
-
-    override fun onIncrementSequence() {
-
-    }
-
-    override fun onEndGame() {
-
+        val delay = duration + startDelay
+        handler.postDelayed(runnable, delay)
     }
 }

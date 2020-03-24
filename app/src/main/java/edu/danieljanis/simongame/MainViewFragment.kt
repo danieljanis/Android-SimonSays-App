@@ -1,124 +1,134 @@
 package edu.danieljanis.simongame
 
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.activity_start_screen.view.*
-import kotlinx.android.synthetic.main.fragment_main_view.*
-import kotlinx.android.synthetic.main.fragment_main_view.view.*
-import java.util.*
+import android.widget.Button
+import androidx.fragment.app.Fragment
+
 
 class MainViewFragment : Fragment() {
 
-    // Interface
     interface StateListener {
-        fun greenButtonPressed()
-        fun redButtonPressed()
-        fun blueButtonPressed()
-        fun yellowButtonPressed()
-        fun resetButtonPressed()
+        fun onButtonPressed(buttonId: Int)
+        fun getSequence(): MutableList<Int>
+        fun getCurrentLevel(): SimonModel.Level
     }
 
-    var listener: StateListener? = null
+    private lateinit var greenButton: Button
+    private lateinit var redButton: Button
+    private lateinit var blueButton: Button
+    private lateinit var yellowButton: Button
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    lateinit var listener: StateListener
 
-        // THIS IS THE VIEW
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
 
-        val view = inflater.inflate(R.layout.fragment_main_view, container, false)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
 
-        view.greenButton.setOnClickListener {
-            listener?.greenButtonPressed()
+        if (context is MainActivity) {
+            listener = context
         }
-
-        view.redButton.setOnClickListener {
-            listener?.redButtonPressed()
-        }
-
-        view.blueButton.setOnClickListener {
-            listener?.blueButtonPressed()
-        }
-
-        view.yellowButton.setOnClickListener {
-            listener?.yellowButtonPressed()
-        }
-
-        view.restartButton.setOnClickListener {
-            listener?.resetButtonPressed()
-        }
-
-        return view
     }
 
-    fun runUIUpdate(integer: Int) {
-        var delay = 1000
-        when (integer) {
-            0 -> {
-                delay = 1000
-            }
-            1 -> {
-                delay = 750
-            }
-            2 -> {
-                delay = 400
-            }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_main_view, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        greenButton = view.findViewById(R.id.greenButton)
+        redButton = view.findViewById(R.id.redButton)
+        blueButton = view.findViewById(R.id.blueButton)
+        yellowButton = view.findViewById(R.id.yellowButton)
+
+        greenButton.setOnClickListener {
+            listener.onButtonPressed(greenButton.id)
         }
-        activity?.let {activity ->
-            val colorList = arrayListOf<String>()
-            var score = 0
+        redButton.setOnClickListener {
+            listener.onButtonPressed(redButton.id)
+        }
+        blueButton.setOnClickListener {
+            listener.onButtonPressed(blueButton.id)
+        }
+        yellowButton.setOnClickListener {
+            listener.onButtonPressed(yellowButton.id)
+        }
+    }
 
-            val view = when ((0..3).random()) {
-                0 -> greenButton
-                1 -> redButton
-                2 -> blueButton
-                3 -> yellowButton
-                else -> restartButton
-            }
+    fun showSequence() {
+        val startDelay = listener.getCurrentLevel().getButtonDelayTime()
+        val animDuration = listener.getCurrentLevel().getButtonAnimationTime()
 
-            val originalName = view.toString()
-            colorList.add(originalName)
-            Log.e("TAG", colorList.toString())
-            val originalColor = view.background as? ColorDrawable
-            val whiteColor = ContextCompat.getColor(activity, R.color.colorWhite)
-            val animator = ValueAnimator.ofObject(
-                ArgbEvaluator(),
-                originalColor?.color,
-                whiteColor,
-                originalColor?.color
-            )
+        val animationSequence = mutableListOf<Animator>()
 
-            animator.addUpdateListener { valueAnimator ->
-                (valueAnimator.animatedValue as? Int)?.let { animatedValue ->
-                    view.setBackgroundColor(animatedValue)
+        enableButtons(false)
+
+        for (button in listener.getSequence()) {
+            var objAnim = ObjectAnimator()
+
+            when (button) {
+                R.id.greenButton -> {
+                    objAnim = ObjectAnimator.ofFloat(greenButton, "alpha", 0.5f, 1.0f)
+                    objAnim.target = greenButton
+                    objAnim.startDelay = startDelay
+                    objAnim.duration = animDuration
+                    animationSequence.add(objAnim)
+                }
+                R.id.redButton -> {
+                    objAnim = ObjectAnimator.ofFloat(redButton, "alpha", 0.5f, 1.0f)
+                    objAnim.target = redButton
+                    objAnim.startDelay = startDelay
+                    objAnim.duration = animDuration
+                    animationSequence.add(objAnim)
+                }
+                R.id.blueButton-> {
+                    objAnim = ObjectAnimator.ofFloat(blueButton, "alpha", 0.5f, 1.0f)
+                    objAnim.target = blueButton
+                    objAnim.startDelay = startDelay
+                    objAnim.duration = animDuration
+                    animationSequence.add(objAnim)
+                }
+                R.id.yellowButton -> {
+                    objAnim = ObjectAnimator.ofFloat(yellowButton, "alpha", 0.5f, 1.0f)
+                    objAnim.target = yellowButton
+                    objAnim.startDelay = startDelay
+                    objAnim.duration = animDuration
+                    animationSequence.add(objAnim)
                 }
             }
-
-            animator?.startDelay = (delay).toLong()
-            return@let animator?.start()
         }
+
+        val animSet = AnimatorSet()
+        animSet.playSequentially(animationSequence)
+        animSet.duration = animDuration
+        animSet.start()
+
+        handler = Handler()
+        runnable = Runnable {
+            // When the animation is over, the buttons are enabled
+            enableButtons(true)
+        }
+        val sequenceSize = listener.getSequence().size
+        val delay = sequenceSize * animSet.duration + sequenceSize * startDelay
+        handler.postDelayed(runnable, delay)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MainViewFragment().apply {
-                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-                }
-            }
+    // disableButtons(false) = enabled them
+    private fun enableButtons(enabled: Boolean) {
+        greenButton.isEnabled = enabled
+        redButton.isEnabled = enabled
+        blueButton.isEnabled = enabled
+        yellowButton.isEnabled = enabled
     }
 }

@@ -11,32 +11,28 @@ class DifficultyScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_screen)
-        val context = this
 
         easyButton.setOnClickListener {
-            val difficultyLevelInt: Int = 0
-            val intent = Intent(context, MainActivity::class.java)
-            intent.putExtra("difficultyLevel", difficultyLevelInt)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("level", SimonModel.Level.EASY)
             startActivity(intent)
         }
 
         mediumButton.setOnClickListener {
-            val difficultyLevelInt: Int = 1
-            val intent = Intent(context, MainActivity::class.java)
-            intent.putExtra("difficultyLevel", difficultyLevelInt)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("level", SimonModel.Level.MEDIUM)
             startActivity(intent)
         }
 
         hardButton.setOnClickListener {
-            val difficultyLevelInt: Int = 2
-            val intent = Intent(context, MainActivity::class.java)
-            intent.putExtra("difficultyLevel", difficultyLevelInt)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("level", SimonModel.Level.HARD)
             startActivity(intent)
         }
 
         highscoreButton.setOnClickListener {
-            val intent = Intent(context, HighScoreActivity::class.java)
-            startActivity(intent)
+//            val intent = Intent(context, GameOverActivity::class.java)
+//            startActivity(intent)
         }
     }
 }

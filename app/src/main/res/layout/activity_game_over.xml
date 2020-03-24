@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:background="#E9000000"
     android:textColor="#FFFFFF"
-    tools:context=".HighScoreActivity">
+    tools:context=".GameOverActivity">
 
     <TextView
         android:id="@+id/gameOverTextView"
