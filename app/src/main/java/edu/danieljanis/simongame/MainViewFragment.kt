@@ -4,7 +4,9 @@ package edu.danieljanis.simongame
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -12,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.fragment_main_view.*
 
 
 class MainViewFragment : Fragment() {
@@ -20,6 +23,7 @@ class MainViewFragment : Fragment() {
         fun onButtonPressed(buttonId: Int)
         fun getSequence(): MutableList<Int>
         fun getCurrentLevel(): SimonModel.Level
+        fun onCheckIfEmpty()
     }
 
     private lateinit var greenButton: Button
@@ -54,17 +58,38 @@ class MainViewFragment : Fragment() {
 
         greenButton.setOnClickListener {
             listener.onButtonPressed(greenButton.id)
+            //listener.onCheckIfEmpty()
         }
         redButton.setOnClickListener {
             listener.onButtonPressed(redButton.id)
+            //listener.onCheckIfEmpty()
         }
         blueButton.setOnClickListener {
             listener.onButtonPressed(blueButton.id)
+            //listener.onCheckIfEmpty()
         }
         yellowButton.setOnClickListener {
             listener.onButtonPressed(yellowButton.id)
+            //listener.onCheckIfEmpty()
         }
     }
+
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            createHorizontalLayout()
+//        }
+//        else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//            createVerticalLayout()
+//        }
+//    }
+//
+//    private fun createVerticalLayout() {
+//    }
+//
+//    private fun createHorizontalLayout() {
+//
+//    }
 
     fun showSequence() {
         val startDelay = listener.getCurrentLevel().getButtonDelayTime()
@@ -73,7 +98,6 @@ class MainViewFragment : Fragment() {
         val animationSequence = mutableListOf<Animator>()
 
         enableButtons(false)
-
         for (button in listener.getSequence()) {
             var objAnim = ObjectAnimator()
 
@@ -83,6 +107,14 @@ class MainViewFragment : Fragment() {
                     objAnim.target = greenButton
                     objAnim.startDelay = startDelay
                     objAnim.duration = animDuration
+                    objAnim.addListener(object: Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            listener.onCheckIfEmpty()
+                        }
+                    })
                     animationSequence.add(objAnim)
                 }
                 R.id.redButton -> {
@@ -90,6 +122,14 @@ class MainViewFragment : Fragment() {
                     objAnim.target = redButton
                     objAnim.startDelay = startDelay
                     objAnim.duration = animDuration
+                    objAnim.addListener(object: Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            listener.onCheckIfEmpty()
+                        }
+                    })
                     animationSequence.add(objAnim)
                 }
                 R.id.blueButton-> {
@@ -97,6 +137,14 @@ class MainViewFragment : Fragment() {
                     objAnim.target = blueButton
                     objAnim.startDelay = startDelay
                     objAnim.duration = animDuration
+                    objAnim.addListener(object: Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            listener.onCheckIfEmpty()
+                        }
+                    })
                     animationSequence.add(objAnim)
                 }
                 R.id.yellowButton -> {
@@ -104,6 +152,14 @@ class MainViewFragment : Fragment() {
                     objAnim.target = yellowButton
                     objAnim.startDelay = startDelay
                     objAnim.duration = animDuration
+                    objAnim.addListener(object: Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator?) {}
+                        override fun onAnimationRepeat(animation: Animator?) {}
+                        override fun onAnimationCancel(animation: Animator?) {}
+                        override fun onAnimationEnd(animation: Animator?) {
+                            listener.onCheckIfEmpty()
+                        }
+                    })
                     animationSequence.add(objAnim)
                 }
             }
@@ -118,7 +174,9 @@ class MainViewFragment : Fragment() {
         runnable = Runnable {
             // When the animation is over, the buttons are enabled
             enableButtons(true)
+            tempTextView.text = getString(R.string.playersTurn)
         }
+        tempTextView.text = getString(R.string.simonsTurn)
         val sequenceSize = listener.getSequence().size
         val delay = sequenceSize * animSet.duration + sequenceSize * startDelay
         handler.postDelayed(runnable, delay)

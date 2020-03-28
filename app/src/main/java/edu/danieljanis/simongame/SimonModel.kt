@@ -1,7 +1,9 @@
 package edu.danieljanis.simongame
 
+import android.util.Log
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.ViewModel
+import kotlin.math.absoluteValue
 
 class SimonModel: ViewModel() {
 
@@ -34,10 +36,15 @@ class SimonModel: ViewModel() {
     private var colorOptions = mutableListOf<@LayoutRes Int>()
     lateinit var level: Level
         private set
+    lateinit var animSequence: MutableList<Int>
+        private set
     lateinit var sequence: MutableList<Int>
         private set
-    private var animationIndex = 0
+    lateinit var checkSequence: MutableList<Int>
+        private set
     private var selectionIndex = 0
+    private var animationIndex = 0
+    private var finalScore = 0
     lateinit var listener: SimonListener
 
     init {
@@ -52,8 +59,12 @@ class SimonModel: ViewModel() {
     }
 
     fun startGame() {
+        animSequence = mutableListOf()
         sequence = mutableListOf()
+        checkSequence = mutableListOf()
         incrementSequence()
+        checkSequence = sequence.toMutableList()
+        animSequence = sequence.toMutableList()
         listener.onStartGame()
     }
 
@@ -62,30 +73,41 @@ class SimonModel: ViewModel() {
     }
 
     fun checkSequence(buttonId: Int) {
-        // check that the sequence at the selectionIndex is equal to id
         if (matchesAtIndex(buttonId)) {
-            if (endOfSequence()) {
+            selectionIndex++
+            animationIndex = selectionIndex
+            if (selectionIndex >= animSequence.size) {
+                finalScore++
+                resetSelectionIndex()
                 incrementSequence()
             }
-            selectionIndex++
+            listener.onCheckSequence()
         }
         else {
             endGame()
         }
-        listener.onCheckSequence()
+    }
+
+    fun checkIfEmpty() {
+        if (checkSequence.isNotEmpty()) {
+            checkSequence.removeAt(0)
+            animSequence = checkSequence
+        }
     }
 
     fun matchesAtIndex(buttonId: Int): Boolean {
         return sequence[selectionIndex] == buttonId
     }
 
-    fun endOfSequence(): Boolean {
-        return selectionIndex == sequence.size - 1
+    fun resetSelectionIndex() {
+        selectionIndex = 0
     }
 
     fun incrementSequence() {
+        resetSelectionIndex()
         // add randomly colored button onto sequence
         sequence.add(colorOptions[(0..3).random()])
+        animSequence = sequence.toMutableList()
         showSequence()
         listener.onIncrementSequence()
     }
@@ -102,7 +124,6 @@ class SimonModel: ViewModel() {
     }
 
     fun getScore(): Int {
-        // could be +1
-        return selectionIndex
+        return finalScore
     }
 }

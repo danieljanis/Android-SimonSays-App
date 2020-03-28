@@ -9,6 +9,7 @@ import android.view.animation.Animation
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.android.synthetic.main.activity_game_over.*
 
 class MainActivity : AppCompatActivity(), MainViewFragment.StateListener {
     private var mainViewFragment: MainViewFragment? = null
@@ -23,7 +24,6 @@ class MainActivity : AppCompatActivity(), MainViewFragment.StateListener {
         setContentView(R.layout.fragment_container)
 
         val level = intent.getSerializableExtra("level") as SimonModel.Level
-        Log.e("TAG", "Difficulty integer -> $level")
 
         simonModel = ViewModelProvider(this).get(SimonModel::class.java)
         simonModel.setLevel(level)
@@ -34,7 +34,9 @@ class MainActivity : AppCompatActivity(), MainViewFragment.StateListener {
                 mainViewFragment?.showSequence()
             }
 
-            override fun onCheckSequence() {}
+            override fun onCheckSequence() {
+                scoreTextView.text = simonModel.getScore().toString()
+            }
 
             override fun onIncrementSequence() {}
 
@@ -76,6 +78,10 @@ class MainActivity : AppCompatActivity(), MainViewFragment.StateListener {
 
     override fun getCurrentLevel(): SimonModel.Level {
         return simonModel.level
+    }
+
+    override fun onCheckIfEmpty() {
+        simonModel.checkIfEmpty()
     }
 
     private fun flashButton(buttonId: Int, duration: Long) {

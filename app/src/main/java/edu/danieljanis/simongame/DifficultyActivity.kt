@@ -1,9 +1,8 @@
 package edu.danieljanis.simongame
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_start_screen.*
 
 class DifficultyScreenActivity : AppCompatActivity() {
