@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:background="#E9000000"
     android:gravity="center"
-    tools:context=".MainViewFragment">
+    tools:context=".MainViewFragment"
+    tools:layout_editor_absoluteY="25dp">
 
     <TextView
         android:id="@+id/tempTextView"
@@ -19,6 +20,7 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -32,67 +34,61 @@
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/tempTextView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/redButton"
+        style="@style/AppTheme.Button"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/greenButton"
+        app:layout_constraintTop_toBottomOf="@+id/scoreTextView" />
+
+    <Button
+        android:id="@+id/yellowButton"
+        style="@style/AppTheme.Button"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="8dp"
+        android:background="#FFDD00"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tempTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/greenButton" />
+
+    <Button
+        android:id="@+id/blueButton"
+        style="@style/AppTheme.Button"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="#0000FF"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/yellowButton"
+        app:layout_constraintTop_toBottomOf="@+id/redButton" />
 
     <Button
         android:id="@+id/greenButton"
         style="@style/AppTheme.Button"
-        android:layout_width="150dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="36dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="20dp"
         android:background="#00FF00"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scoreTextView" />
-
-    <Button
-        android:id="@+id/redButton"
-        style="@style/AppTheme.Button"
-        android:layout_width="150dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="36dp"
-        android:background="#FF0000"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.436"
-        app:layout_constraintStart_toEndOf="@+id/greenButton"
-        app:layout_constraintTop_toBottomOf="@+id/scoreTextView" />
-
-    <Button
-        android:id="@+id/blueButton"
-        style="@style/AppTheme.Button"
-        android:layout_width="150dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="36dp"
-        android:background="#0000FF"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/yellowButton"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/greenButton"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/yellowButton"
-        style="@style/AppTheme.Button"
-        android:layout_width="150dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="40dp"
-        android:background="#FFDD00"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/redButton"
-        app:layout_constraintVertical_bias="0.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

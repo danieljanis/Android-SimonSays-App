@@ -30,8 +30,9 @@ class DifficultyScreenActivity : AppCompatActivity() {
         }
 
         highscoreButton.setOnClickListener {
-//            val intent = Intent(context, GameOverActivity::class.java)
-//            startActivity(intent)
+            val intent = Intent(this, GameOverActivity::class.java)
+            intent.putExtra("score", R.id.scoreTextView)
+            startActivity(intent)
         }
     }
 }

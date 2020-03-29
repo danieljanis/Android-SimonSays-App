@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".GameOverActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity" android:configChanges="orientation|screenSize|keyboardHidden"/>
         <activity android:name=".DifficultyScreenActivity" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,9 +1,7 @@
 package edu.danieljanis.simongame
 
-import android.util.Log
 import androidx.annotation.LayoutRes
 import androidx.lifecycle.ViewModel
-import kotlin.math.absoluteValue
 
 class SimonModel: ViewModel() {
 
@@ -68,7 +66,7 @@ class SimonModel: ViewModel() {
         listener.onStartGame()
     }
 
-    fun showSequence() {
+    private fun showSequence() {
         listener.onShowSequence()
     }
 
@@ -95,15 +93,15 @@ class SimonModel: ViewModel() {
         }
     }
 
-    fun matchesAtIndex(buttonId: Int): Boolean {
+    private fun matchesAtIndex(buttonId: Int): Boolean {
         return sequence[selectionIndex] == buttonId
     }
 
-    fun resetSelectionIndex() {
+    private fun resetSelectionIndex() {
         selectionIndex = 0
     }
 
-    fun incrementSequence() {
+    private fun incrementSequence() {
         resetSelectionIndex()
         // add randomly colored button onto sequence
         sequence.add(colorOptions[(0..3).random()])
@@ -116,9 +114,7 @@ class SimonModel: ViewModel() {
         return sequence[selectionIndex]
     }
 
-    fun endGame() {
-        // Show highscore activity
-
+    private fun endGame() {
         // resetSequence() --> save memory
         listener.onEndGame()
     }

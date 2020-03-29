@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
+import android.util.Xml
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,38 +59,17 @@ class MainViewFragment : Fragment() {
 
         greenButton.setOnClickListener {
             listener.onButtonPressed(greenButton.id)
-            //listener.onCheckIfEmpty()
         }
         redButton.setOnClickListener {
             listener.onButtonPressed(redButton.id)
-            //listener.onCheckIfEmpty()
         }
         blueButton.setOnClickListener {
             listener.onButtonPressed(blueButton.id)
-            //listener.onCheckIfEmpty()
         }
         yellowButton.setOnClickListener {
             listener.onButtonPressed(yellowButton.id)
-            //listener.onCheckIfEmpty()
         }
     }
-
-//    override fun onConfigurationChanged(newConfig: Configuration) {
-//        super.onConfigurationChanged(newConfig)
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            createHorizontalLayout()
-//        }
-//        else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            createVerticalLayout()
-//        }
-//    }
-//
-//    private fun createVerticalLayout() {
-//    }
-//
-//    private fun createHorizontalLayout() {
-//
-//    }
 
     fun showSequence() {
         val startDelay = listener.getCurrentLevel().getButtonDelayTime()
@@ -172,9 +152,10 @@ class MainViewFragment : Fragment() {
 
         handler = Handler()
         runnable = Runnable {
-            // When the animation is over, the buttons are enabled
             enableButtons(true)
-            tempTextView.text = getString(R.string.playersTurn)
+            if (tempTextView.text != null) {
+                tempTextView.text = getString(R.string.playersTurn)
+            }
         }
         tempTextView.text = getString(R.string.simonsTurn)
         val sequenceSize = listener.getSequence().size
@@ -182,7 +163,7 @@ class MainViewFragment : Fragment() {
         handler.postDelayed(runnable, delay)
     }
 
-    // disableButtons(false) = enabled them
+    // enabledButtons(true) = clickable buttons
     private fun enableButtons(enabled: Boolean) {
         greenButton.isEnabled = enabled
         redButton.isEnabled = enabled

@@ -10,6 +10,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_game_over.*
+import kotlinx.android.synthetic.main.fragment_main_view.*
 
 class MainActivity : AppCompatActivity(), MainViewFragment.StateListener {
     private var mainViewFragment: MainViewFragment? = null
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity(), MainViewFragment.StateListener {
 
             override fun onEndGame() {
                 flashCorrectButton(simonModel.getCurrentButton(), simonModel.level.getButtonAnimationTime(), simonModel.level.getButtonDelayTime())
+
             }
         }
 
