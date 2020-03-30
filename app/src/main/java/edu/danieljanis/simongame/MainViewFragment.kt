@@ -4,12 +4,9 @@ package edu.danieljanis.simongame
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
-import android.util.Xml
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_main_view.*
 class MainViewFragment : Fragment() {
 
     interface StateListener {
-        fun onButtonPressed(buttonId: Int)
+        fun onButtonPressed(buttonId: Int): Boolean
         fun getSequence(): MutableList<Int>
         fun getCurrentLevel(): SimonModel.Level
         fun onCheckIfEmpty()
@@ -36,6 +33,7 @@ class MainViewFragment : Fragment() {
 
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
+    private var currentAnimator: Animator? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -58,19 +56,47 @@ class MainViewFragment : Fragment() {
         yellowButton = view.findViewById(R.id.yellowButton)
 
         greenButton.setOnClickListener {
-            listener.onButtonPressed(greenButton.id)
+            listener.onButtonPressed(greenButton.id).also {
+                if (!it) enableButtons(false)
+            }
         }
         redButton.setOnClickListener {
-            listener.onButtonPressed(redButton.id)
+            listener.onButtonPressed(redButton.id).also {
+                if (!it) enableButtons(false)
+            }
         }
         blueButton.setOnClickListener {
-            listener.onButtonPressed(blueButton.id)
+            listener.onButtonPressed(blueButton.id).also {
+                if (!it) enableButtons(false)
+            }
         }
         yellowButton.setOnClickListener {
-            listener.onButtonPressed(yellowButton.id)
+            listener.onButtonPressed(yellowButton.id).also {
+                if (!it) enableButtons(false)
+            }
         }
     }
 
+    /*
+    showSequence() is the bread and butter, it has two listeners:
+        1. startDelay (how long to wait for the animation to start)
+            and
+        2. animDuration (how long the animation will last)
+
+        animationSequence is a list of the current sequence and used to play
+            the animations sequentially (explained further down)
+
+    Firstly, buttons are disabled when showSequence() starts its magic,
+        for each button in the sequence, create an object (objAnim),
+            based on which button was chosen, do the following:
+                1. Add details (Button, propertyName, startDelay, animDuration)
+                2. set target = Button
+                3. set delay = startDelay
+                4. set duration = animDuration
+                5. onAnimationEnd, using function onCheckIfEmpty() from MainActivity.kt,
+                    (which calls checkIfEmpty() from SimonModel.kt)
+                6. Finally, the objAnim is stored in the animationSequence
+    */
     fun showSequence() {
         val startDelay = listener.getCurrentLevel().getButtonDelayTime()
         val animDuration = listener.getCurrentLevel().getButtonAnimationTime()
@@ -145,11 +171,17 @@ class MainViewFragment : Fragment() {
             }
         }
 
-        val animSet = AnimatorSet()
-        animSet.playSequentially(animationSequence)
-        animSet.duration = animDuration
-        animSet.start()
+        // This applys the following to the currentAnimator,
+        // Plays the animationSequence in order, grabbing the duration each time and
+        // start() begins the sequence animation
+        currentAnimator = AnimatorSet().apply {
+            playSequentially(animationSequence)
+            duration = animDuration
+            start()
+        }
 
+        // handler is bound to a Looper, used to deliver the following runnable to the Looper's
+        // message queue and to execute them on the Looper's thread
         handler = Handler()
         runnable = Runnable {
             enableButtons(true)
@@ -159,7 +191,8 @@ class MainViewFragment : Fragment() {
         }
         tempTextView.text = getString(R.string.simonsTurn)
         val sequenceSize = listener.getSequence().size
-        val delay = sequenceSize * animSet.duration + sequenceSize * startDelay
+        val delay = sequenceSize * currentAnimator!!.duration + sequenceSize * startDelay
+        // Easy way to delay the runnable
         handler.postDelayed(runnable, delay)
     }
 
